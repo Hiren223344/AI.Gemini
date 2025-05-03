@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libre Chat × Gemini API Key Generator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="theme-color" content="#4285F4">
+    <link rel="manifest" href="data:application/json;charset=utf-8;base64,ewogICJuYW1lIjogIkxpYnJlIENoYXQgQVBJIEdlbmVyYXRvciIsCiAgInNob3J0X25hbWUiOiAiTGlicmVBUEkiLAogICJkZXNjcmlwdGlvbiI6ICJHZW5lcmF0ZSBBUEkga2V5cyBmb3IgTGlicmUgQ2hhdCDDlyBHZW1pbmkiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzQyODVGNCIKfQ==">
     <style>
         :root {
             --primary: #4285F4;  /* Google Blue */
@@ -81,8 +82,8 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
-        .logo i {
-            color: var(--primary);
+        .logo::before {
+            content: "🤖";
             font-size: 28px;
         }
         
@@ -160,10 +161,6 @@
             background: var(--primary-dark);
         }
         
-        .copy-btn i {
-            font-size: 14px;
-        }
-        
         .warning {
             background: #fce8e6;
             border-left: 3px solid var(--accent);
@@ -194,10 +191,6 @@
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-        
-        .feature i {
-            font-size: 12px;
         }
         
         @keyframes fadeIn {
@@ -237,16 +230,13 @@
 <body>
     <div class="card">
         <div class="card-header">
-            <div class="logo">
-                <i class="fas fa-robot"></i> <!-- Changed to robot icon for AI theme -->
-            </div>
+            <div class="logo"></div>
             <h1>Libre Chat × Gemini API</h1>
             <p>API Key Generator • 1.5 Flash • Powered by Google AI</p>
         </div>
         
         <div class="card-body">
             <button class="btn btn-primary" id="generateBtn">
-                <i class="fas fa-key" style="margin-right: 8px;"></i>
                 Generate API Key
             </button>
             
@@ -254,40 +244,52 @@
                 <div class="api-key-wrapper">
                     <div class="api-key" id="apiKey"></div>
                     <button class="copy-btn" id="copyBtn" title="Copy to clipboard">
-                        <i class="far fa-copy"></i>
+                        📋
                     </button>
                 </div>
                 
                 <div class="warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>Do not share this API key. Misuse will result in termination.</span>
+                    ⚠️ <span>Do not share this API key. Misuse will result in termination.</span>
                 </div>
                 
                 <div class="features">
                     <div class="feature">
-                        <i class="fas fa-shield-alt"></i> Secure
+                        🔒 Secure
                     </div>
                     <div class="feature">
-                        <i class="fas fa-bolt"></i> Fast (1.5 Flash)
+                        ⚡ Fast (1.5 Flash)
                     </div>
                     <div class="feature">
-                        <i class="fas fa-link"></i> Libre Chat Only
+                        🔗 Libre Chat Only
                     </div>
                 </div>
                 
                 <div class="powered-by">
-                    <i class="fab fa-google"></i> Powered by Google Gemini AI
+                    Powered by Google Gemini AI
                 </div>
             </div>
         </div>
     </div>
     
     <div class="success-message" id="successMessage">
-        <i class="fas fa-check-circle"></i>
-        Copied to clipboard!
+        ✓ Copied to clipboard!
     </div>
 
     <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,' + btoa(`
+                const CACHE_NAME = 'librechat-api-v1';
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(caches.open(CACHE_NAME));
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                });
+            `));
+        }
+
+        // App Logic
         const generateBtn = document.getElementById('generateBtn');
         const apiKeyContainer = document.getElementById('apiKeyContainer');
         const apiKey = document.getElementById('apiKey');
@@ -307,6 +309,16 @@
                     setTimeout(() => successMessage.classList.remove('show'), 3000);
                 })
                 .catch(err => console.error('Failed to copy:', err));
+        });
+
+        // Trigger PWA install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            setTimeout(() => {
+                if (confirm("Install Libre Chat API Generator as an app?")) {
+                    e.prompt();
+                }
+            }, 3000);
         });
     </script>
 </body>
